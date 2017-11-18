@@ -1,0 +1,16 @@
+#ant folders
+build/
+dist/
+
+#netbeans project files to ignore
+core
+nbproject/*
+!nbproject/project.properties
+!nbproject/project.xml
+
+#java compiled files
+*.class
+
+#general files
+*.swp
+*.log
