@@ -5,8 +5,6 @@
  */
 package BtcWisdomServer;
 
-import com.sun.net.httpserver.HttpServer;
-
 /**
  *
  * @author Navia

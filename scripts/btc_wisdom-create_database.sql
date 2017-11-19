@@ -40,6 +40,8 @@ create table configuracion(
 		id int(11) auto_increment not null,
 		fk_usuario int(11) not null,
 		moneda varchar(3) not null,
+		importe_compra double(9,2) not null,
+		importe_venta double(9,2) not null,
 		precio_max_venta double(9,2) not null,
 		precio_min_venta double(9,2) not null,
 		precio_max_compra double(9,2) not null,
