@@ -5,6 +5,7 @@
  */
 package BtcWisdomServer.model.classes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,8 +22,10 @@ public class Usuario {
     private int id;
     private String nombre;
     private String correo;
+    @JsonIgnore
     private String contrasena;
     private double saldo;
+    @JsonIgnore
     private List<Usuario> seguidos;
     private Map<Moneda, Double> monedas;
     

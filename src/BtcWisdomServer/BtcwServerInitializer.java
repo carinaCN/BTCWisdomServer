@@ -5,22 +5,34 @@
  */
 package BtcWisdomServer;
 
+import BtcWisdomServer.model.classes.*;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 /**
  *
  * @author Navia
  */
 public class BtcwServerInitializer implements HttpApiInitializer{
     
+    private byte[] jsonSerialize(Object o){
+        ObjectMapper mapper = new ObjectMapper();
+        try{
+            return mapper.writeValueAsBytes(o);
+        }catch(IOException ex){
+            return ("{\"error\": \""+ex.getClass().getName() + " - " + ex.getMessage()+"\"}").getBytes();
+        }
+    }
 
     @Override
     public HttpApiServer initilize(HttpApiServer srv) {
         srv.setDefaultHeader("Content-type", "application/json; charset=utf-8");
         
         srv.setHandler("usuario", "GET", (he, params) -> {
-            String id = params.length > 0 ? params[0] : null;
-            String message = id != null ? "This will show the user info of user with id "+id :
-                    "This will show the user info specified with ../usuario/{id}";
-            return message.getBytes();
+            Usuario u = new Usuario("john", "johnm@yopmail.com", "123456");
+            return jsonSerialize(u);
         });
         
         srv.setHandler("moneda", "GET", (he, params) -> {
