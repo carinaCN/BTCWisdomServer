@@ -29,6 +29,10 @@ public class Usuario {
     private List<Usuario> seguidos;
     private Map<Moneda, Double> monedas;
     
+    public Usuario(){
+        
+    }
+    
     public Usuario(String nombre, String correo, String contrasena){
         this(nombre, correo, contrasena, 0d);
     }

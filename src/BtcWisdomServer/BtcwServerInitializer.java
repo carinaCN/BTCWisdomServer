@@ -6,10 +6,12 @@
 package BtcWisdomServer;
 
 import BtcWisdomServer.model.classes.*;
-import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,12 +19,26 @@ import java.io.IOException;
  */
 public class BtcwServerInitializer implements HttpApiInitializer{
     
+    private ObjectMapper mapper;
+
+    public BtcwServerInitializer() {
+        mapper = new ObjectMapper();
+    }
+    
     private byte[] jsonSerialize(Object o){
-        ObjectMapper mapper = new ObjectMapper();
         try{
-            return mapper.writeValueAsBytes(o);
-        }catch(IOException ex){
+            return this.mapper.writeValueAsBytes(o);
+        }catch(JsonProcessingException ex){
             return ("{\"error\": \""+ex.getClass().getName() + " - " + ex.getMessage()+"\"}").getBytes();
+        }
+    }
+    
+    private <T> T jsonDeserialize(InputStream is, Class<T> classObj){
+        try {
+            return this.mapper.readValue(is, classObj);
+        } catch (IOException ex) {
+            Logger.getLogger(BtcwServerInitializer.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 
@@ -35,8 +51,14 @@ public class BtcwServerInitializer implements HttpApiInitializer{
             return jsonSerialize(u);
         });
         
+        srv.setHandler("usuario/echo", "POST", (he, params) -> {
+            Usuario u = jsonDeserialize(he.getRequestBody(), Usuario.class);
+            System.out.println(u.getNombre() + " - " + u.getCorreo());
+            return jsonSerialize(u);
+        });
+        
         srv.setHandler("moneda", "GET", (he, params) -> {
-            return "This will show info for coins.".getBytes();
+            return "[\"This will show info for coins.\"]".getBytes();
         });
         
         return srv;
