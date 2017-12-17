@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.util.Pair;
+import BtcWisdomServer.utils.Pair;
 
 /**
  *
@@ -82,7 +82,6 @@ public class HttpApiServer implements HttpHandler{
     
     @Override
     public void handle(HttpExchange he) throws IOException {
-        //he.getResponseHeaders().add("Content-type", "text/plain; charset=utf-8");
         this.setUpDefaultResposneHeaders(he);
         String path = he.getHttpContext().getPath();
         String method = he.getRequestMethod();

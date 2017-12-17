@@ -6,6 +6,7 @@
 package BtcWisdomServer;
 
 import BtcWisdomServer.model.classes.*;
+import BtcWisdomServer.utils.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -18,28 +19,8 @@ import java.util.logging.Logger;
  * @author Navia
  */
 public class BtcwServerInitializer implements HttpApiInitializer{
-    
-    private ObjectMapper mapper;
 
     public BtcwServerInitializer() {
-        mapper = new ObjectMapper();
-    }
-    
-    private byte[] jsonSerialize(Object o){
-        try{
-            return this.mapper.writeValueAsBytes(o);
-        }catch(JsonProcessingException ex){
-            return ("{\"error\": \""+ex.getClass().getName() + " - " + ex.getMessage()+"\"}").getBytes();
-        }
-    }
-    
-    private <T> T jsonDeserialize(InputStream is, Class<T> classObj){
-        try {
-            return this.mapper.readValue(is, classObj);
-        } catch (IOException ex) {
-            Logger.getLogger(BtcwServerInitializer.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
     }
 
     @Override
@@ -48,13 +29,13 @@ public class BtcwServerInitializer implements HttpApiInitializer{
         
         srv.setHandler("usuario", "GET", (he, params) -> {
             Usuario u = new Usuario("john", "johnm@yopmail.com", "123456");
-            return jsonSerialize(u);
+            return JSON.serialize(u);
         });
         
         srv.setHandler("usuario/echo", "POST", (he, params) -> {
-            Usuario u = jsonDeserialize(he.getRequestBody(), Usuario.class);
+            Usuario u = JSON.deserialize(he.getRequestBody(), Usuario.class);
             System.out.println(u.getNombre() + " - " + u.getCorreo());
-            return jsonSerialize(u);
+            return JSON.serialize(u);
         });
         
         srv.setHandler("moneda", "GET", (he, params) -> {
