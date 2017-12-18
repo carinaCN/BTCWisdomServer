@@ -6,6 +6,7 @@
 package BtcWisdomServer;
 
 import BtcWisdomServer.exceptions.BtcwException;
+import BtcWisdomServer.utils.Config;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +22,12 @@ public class BTCWisdomSrvApp {
     public static void main(String[] args) {
         //Endpoint.publish("http://localhost:8080/ws/TestSrv", new TestSrv());
         try {
-            HttpApiServer srv = new HttpApiServer();
+            Config conf = Config.getInstance();
+            String ip = conf.getValue("server.bind-address");
+            int port = Integer.parseInt(conf.getValue("server.bind-port"));
+            String entryPoint = conf.getValue("server.entry-point");
+
+            HttpApiServer srv = new HttpApiServer(ip, port, entryPoint);
             srv = new BtcwServerInitializer().initilize(srv);
             srv.start();
         } catch (BtcwException ex) {
