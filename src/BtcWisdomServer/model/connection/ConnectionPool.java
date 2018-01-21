@@ -5,6 +5,8 @@
  */
 package BtcWisdomServer.model.connection;
 
+import BtcWisdomServer.BTCWisdomSrvApp;
+import BtcWisdomServer.utils.Config;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -37,7 +39,16 @@ public class ConnectionPool {
         if(ACTIVE_CONNECTIONS < MAX_CONNECTIONS){
             Connection c = null;
             try {
-                c = DriverManager.getConnection("jdbc:mysql://localhost:3306/btc_wisdom", "root", "root");
+                Config conf = Config.getInstance();
+                String address = conf.getValue("BD.address", "localhost");
+                String port = conf.getValue("BD.port", "3306");
+                String user = conf.getValue("BD.user", "root");
+                String pass = conf.getValue("BD.password", "root");
+                String database = conf.getValue("BD.database", "btc_wisdom");
+                if(BTCWisdomSrvApp.DEBUG){
+                    System.out.println("New DB connection to: "+address+":"+port+"/"+database);
+                }
+                c = DriverManager.getConnection("jdbc:mysql://"+address+":"+port+"/"+database, user, pass);
             } catch (SQLException ex) {
                 Logger.getLogger(ConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
                 System.err.println("Error on creating connection!");
@@ -46,7 +57,7 @@ public class ConnectionPool {
             return c;
         }
         
-        while(connections.size() == 0){
+        while(connections.isEmpty()){
             try {
                 ConnectionPool.class.wait();
             } catch (InterruptedException ex) {

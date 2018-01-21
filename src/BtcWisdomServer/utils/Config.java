@@ -21,10 +21,10 @@ import java.util.regex.Pattern;
 public class Config {
     
     private static final String DEFAULT_FILE = "conf.ini";
-    private static final HashMap<String, Config> configs = new HashMap<>();
+    private static final HashMap<String, Config> CONFIGS = new HashMap<>();
     
-    private LinkedList<String> files;
-    private HashMap<String, String> options;
+    private final LinkedList<String> files;
+    private final HashMap<String, String> options;
     
     public Config(){
         this.files = new LinkedList<>();
@@ -37,17 +37,18 @@ public class Config {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
         }
+        //If file is not found, register an empty config as a default.
         Config c = new Config();
-        Config.configs.put(DEFAULT_FILE, c);
+        Config.CONFIGS.put(DEFAULT_FILE, c);
         return c;
     }
     
     public static Config getInstance(String file) throws FileNotFoundException{
-        Config c = Config.configs.get(file);
+        Config c = Config.CONFIGS.get(file);
         if(c != null) return c;
         c = new Config();
         c.process(file);
-        Config.configs.put(file, c);
+        Config.CONFIGS.put(file, c);
         return c;
     }
     
@@ -74,7 +75,7 @@ public class Config {
             //Detecta un bloque nuevo
             if(line.startsWith("[")){
                 int last = line.indexOf(']');
-                block = line.substring(1, last);
+                block = line.substring(1, last)+".";
                 continue;
             }
             
@@ -85,12 +86,17 @@ public class Config {
             if(option.length < 2) continue;
             String key = option[0].trim();
             String val = option[1].trim();
-            this.options.put(block+"."+key, val);
+            this.options.put(block+key, val);
         }
     }
     
     public String getValue(String key){
-        return this.options.get(key);
+        return this.getValue(key, null);
+    }
+    
+    public String getValue(String key, String defaultValue){
+        String value = this.options.get(key);
+        return value == null ? defaultValue : value;
     }
     
 }

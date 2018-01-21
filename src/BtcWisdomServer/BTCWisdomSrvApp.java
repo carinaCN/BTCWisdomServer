@@ -16,17 +16,30 @@ import java.util.logging.Logger;
  */
 public class BTCWisdomSrvApp {
 
+    public static boolean DEBUG;
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //Endpoint.publish("http://localhost:8080/ws/TestSrv", new TestSrv());
         try {
+            //Set debug flag
+            DEBUG = args.length != 0 && args[0].equals("--debug");
+            
+            //Get config data
             Config conf = Config.getInstance();
-            String ip = conf.getValue("server.bind-address");
-            int port = Integer.parseInt(conf.getValue("server.bind-port"));
-            String entryPoint = conf.getValue("server.entry-point");
+            String ip = conf.getValue("server.bind-address", "localhost");
+            int port = Integer.parseInt(conf.getValue("server.bind-port", "8080"));
+            String entryPoint = conf.getValue("server.entry-point", "/api");
 
+            //Show info on debug mode
+            if(DEBUG){
+                System.out.println("Server address: "+ip);
+                System.out.println("Server port: "+port);
+                System.out.println("Server entry point: "+entryPoint);
+            }
+            
+            //Initate server
             HttpApiServer srv = new HttpApiServer(ip, port, entryPoint);
             srv = new BtcwServerInitializer().initilize(srv);
             srv.start();
