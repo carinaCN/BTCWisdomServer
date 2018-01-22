@@ -82,12 +82,12 @@ public class HttpApiServer implements HttpHandler{
     
     @Override
     public void handle(HttpExchange he) throws IOException {
-        this.setUpDefaultResposneHeaders(he);
         String path = he.getHttpContext().getPath();
         String method = he.getRequestMethod();
         RequestHandler handler = this.handlers.get(new Pair<>(path, method));
         byte[] response = null;
         if(handler != null){
+            this.setUpDefaultResposneHeaders(he);
             String paramsString = he.getRequestURI().getPath().replaceAll(path+"/", "");
             String[] params = paramsString.equals("") ? new String[0] : paramsString.split("/");
             response = handler.handle(he, params);
