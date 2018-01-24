@@ -12,5 +12,5 @@ import com.sun.net.httpserver.HttpServer;
  * @author Navia
  */
 public interface HttpApiInitializer {
-    public HttpApiServer initilize(HttpApiServer srv);
+    public HttpApiServer initialize(HttpApiServer srv);
 }

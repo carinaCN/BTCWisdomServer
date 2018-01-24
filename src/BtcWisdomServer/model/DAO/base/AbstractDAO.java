@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,15 +63,17 @@ public abstract class AbstractDAO<T> {
                 Property<T, Object> p = this.properties.get(field);
                 this.setParameter(ps, index++, p.getProperty(obj));
             }
-            return ps.execute();
+            ps.execute();
+            return true;
         } catch (SQLException ex) {
-            throw new BtcwDaoException(insert, ex);
+            return false;
         }finally{
             ConnectionPool.releaseConnection(c);
         }
     }
     
-    public boolean read(Object id, T newObj){
+    public T read(Object id){
+        T newObj = null;
         String select = null;
         Connection c = ConnectionPool.getConnection();
         try{
@@ -83,20 +87,50 @@ public abstract class AbstractDAO<T> {
             
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
+                newObj = this.getNewInstace();
                 this.setIdValue(newObj, id);
                 for(String field : fields){
                     Object value = rs.getObject(field);
                     Property<T, Object> prop = this.properties.get(field);
                     prop.setProperty(newObj, value);
                 }
-                return true;
             }
-            return false;
         } catch (SQLException ex) {
             throw new BtcwDaoException(select, ex);
         }finally{
             ConnectionPool.releaseConnection(c);
         }
+        return newObj;
+    }
+    
+    public List<T> readAll(){
+        List<T> listaObj = new LinkedList<>();
+        String select = null;
+        Connection c = ConnectionPool.getConnection();
+        try{
+            Set<String> fields = this.properties.keySet();
+            select = "SELECT "+this.getIdField()+", "+String.join(", ", fields);
+            select += " FROM "+this.getTableName();
+            
+            PreparedStatement ps = c.prepareStatement(select);
+            
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                T newObj = this.getNewInstace();
+                this.setIdValue(newObj, rs.getObject(this.getIdField()));
+                for(String field : fields){
+                    Object value = rs.getObject(field);
+                    Property<T, Object> prop = this.properties.get(field);
+                    prop.setProperty(newObj, value);
+                }
+                listaObj.add(newObj);
+            }
+        } catch (SQLException ex) {
+            throw new BtcwDaoException(select, ex);
+        }finally{
+            ConnectionPool.releaseConnection(c);
+        }
+        return listaObj;
     }
     
     public boolean update(T obj){
@@ -123,9 +157,10 @@ public abstract class AbstractDAO<T> {
             }
             this.setParameter(ps, index++, this.getIdValue(obj));
             
-            return ps.execute();
+            ps.execute();
+            return true;
         } catch (SQLException ex) {
-            throw new BtcwDaoException(update, ex);
+            return false;
         }finally{
             ConnectionPool.releaseConnection(c);
         }
@@ -145,9 +180,10 @@ public abstract class AbstractDAO<T> {
             PreparedStatement ps = c.prepareStatement(delete);
             this.setParameter(ps, 1, this.getIdValue(obj));
             
-            return ps.execute();
+            ps.execute();
+            return true;
         } catch (SQLException ex) {
-            throw new BtcwDaoException(delete, ex);
+            return false;
         }finally{
             ConnectionPool.releaseConnection(c);
         }
@@ -160,5 +196,7 @@ public abstract class AbstractDAO<T> {
     protected abstract Object getIdValue(T obj);
     
     protected abstract void setIdValue(T obj, Object value);
+    
+    protected abstract T getNewInstace();
     
 }

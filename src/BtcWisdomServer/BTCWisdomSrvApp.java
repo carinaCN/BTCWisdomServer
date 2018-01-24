@@ -43,7 +43,7 @@ public class BTCWisdomSrvApp {
             
             //Initate server
             HttpApiServer srv = new HttpApiServer(ip, port, entryPoint);
-            srv = new BtcwServerInitializer().initilize(srv);
+            srv = new BtcwServerInitializer().initialize(srv);
             srv.start();
             
             /*Moneda m = new Moneda("EUR", "Euro", "€", 1);

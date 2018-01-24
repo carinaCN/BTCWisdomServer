@@ -84,5 +84,10 @@ public class MonedaDAO extends AbstractDAO<Moneda>{
     protected void setIdValue(Moneda obj, Object value) {
         obj.setCodigo((String) value);
     }
+
+    @Override
+    protected Moneda getNewInstace() {
+        return new Moneda();
+    }
     
 }

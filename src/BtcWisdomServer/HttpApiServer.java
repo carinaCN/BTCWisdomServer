@@ -88,7 +88,10 @@ public class HttpApiServer implements HttpHandler{
         byte[] response = null;
         if(handler != null){
             this.setUpDefaultResposneHeaders(he);
-            String paramsString = he.getRequestURI().getPath().replaceAll(path+"/", "");
+            String paramsString = he.getRequestURI().getPath().replaceAll(path, "");
+            if(!paramsString.isEmpty()){
+                paramsString = paramsString.substring(1);
+            }
             String[] params = paramsString.equals("") ? new String[0] : paramsString.split("/");
             response = handler.handle(he, params);
             he.sendResponseHeaders(200, response.length);
