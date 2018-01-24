@@ -98,6 +98,38 @@ public abstract class AbstractDAO<T> {
         return newObj;
     }
     
+    public void update(T obj){
+        Connection c = ConnectionPool.getConnection();
+        String update = null;
+        try {
+            String tblName = this.getTableName();
+            Set<String> keys = this.properties.keySet();
+            
+            update = "UPDATE "+tblName+" SET ";
+            
+            String coma = "";
+            for(String field : keys){
+                update += coma+field+" = ?";
+                if(coma.isEmpty()) coma = ",";
+            }
+            update += " WHERE "+this.getIdField()+" = ?";
+            
+            PreparedStatement ps = c.prepareStatement(update);
+            int index = 1;
+            for(String field : keys){
+                Property<T, Object> p = this.properties.get(field);
+                this.setParameter(ps, index++, p.getProperty(obj));
+            }
+            this.setParameter(ps, index++, this.getIdValue(obj));
+            
+            ps.execute();
+        } catch (SQLException ex) {
+            throw new BtcwDaoException(update, ex);
+        }finally{
+            ConnectionPool.releaseConnection(c);
+        }
+    }
+    
     protected abstract String getTableName();
     
     protected abstract String getIdField();
