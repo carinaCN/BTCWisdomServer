@@ -8,7 +8,9 @@ create table usuario(
 		correo varchar(50) not null,
 		contrasena varchar(255) not null,
 		saldo double(10,2) not null default 0.0,
-		primary key (id)
+		primary key (id),
+                unique index (nombre),
+                unique index (correo)
 );
 
 create table seguidor(
@@ -27,7 +29,7 @@ create table moneda(
 		primary key (codigo)
 );
 
-create table usuario_moneda(
+create table saldo_moneda(
 		fk_usuario int(11) not null,
 		moneda varchar(3) not null,
 		cantidad double(10,2) not null default 0.0,

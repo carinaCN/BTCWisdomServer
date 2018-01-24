@@ -11,7 +11,7 @@ package BtcWisdomServer.model.classes;
  */
 public class Configuracion {
     
-    private int id;
+    private long id;
     private Usuario usuario;
     private Moneda moneda;
     private double importeCompra;
@@ -38,11 +38,11 @@ public class Configuracion {
         this.precioMaxCompra = pMaxCompra;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

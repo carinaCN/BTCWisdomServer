@@ -6,12 +6,9 @@
 package BtcWisdomServer.model.classes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashMap;
-import java.util.Iterator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -19,15 +16,14 @@ import java.util.Set;
  */
 public class Usuario {
     
-    private int id;
+    private long id;
     private String nombre;
     private String correo;
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String contrasena;
     private double saldo;
     @JsonIgnore
     private List<Usuario> seguidos;
-    private Map<Moneda, Double> monedas;
     
     public Usuario(){
         
@@ -43,14 +39,13 @@ public class Usuario {
         this.contrasena = contrasena;
         this.saldo = saldo;
         this.seguidos = new LinkedList<>();
-        this.monedas = new HashMap<>();
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -106,43 +101,6 @@ public class Usuario {
         //Si hay encontrado, pues lo borramos de la lista.
         if(encontrado != null){
             this.seguidos.remove(encontrado);
-        }
-    }
-    
-    public void setMoneda(Moneda m, double importe){
-        this.monedas.put(m, importe);
-    }
-    
-    public void addToMoneda(Moneda m, double importe){
-        Double importeAntiguo = this.monedas.get(m);
-        if(importeAntiguo == null){
-            importeAntiguo = 0d;
-        }
-        this.monedas.put(m, importeAntiguo+importe);
-    }
-    
-    public void deleteMoneda(Moneda m){
-        this.monedas.remove(m);
-    }
-    
-    public void deleteMoneda(String codigo){
-        //Recorremos monedas del usuario
-        Moneda found = null;
-        Set<Moneda> monedasUsuario = this.monedas.keySet();
-        Iterator<Moneda> it = monedasUsuario.iterator();
-        
-        //Comprobamos cual tiene el mismo codigo
-        while(it.hasNext()){
-            Moneda m = it.next();
-            if(m.getCodigo().equals(codigo)){
-                found = m;
-                break;
-            }
-        }
-        
-        //Si la hemos encontrado, la borramos
-        if(found != null){
-            this.monedas.remove(found);
         }
     }
     

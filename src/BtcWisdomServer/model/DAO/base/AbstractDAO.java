@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,13 +58,23 @@ public abstract class AbstractDAO<T> {
             }
             insert += ")";
             
-            PreparedStatement ps = c.prepareStatement(insert);
+            if(BtcWisdomServer.BTCWisdomSrvApp.DEBUG){
+                System.err.println("GOING TO INSERT: \n"+insert);
+            }
+            
+            PreparedStatement ps = c.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
             int index = 1;
             for(String field : keys){
                 Property<T, Object> p = this.properties.get(field);
-                this.setParameter(ps, index++, p.getProperty(obj));
+                Object value = p.getProperty(obj);
+                this.setParameter(ps, index++, value);
             }
-            ps.execute();
+            ps.executeUpdate();
+            ResultSet resId = ps.getGeneratedKeys();
+            if(resId.next()){
+                Object id = resId.getObject(1);
+                this.setIdValue(obj, id);
+            }
             return true;
         } catch (SQLException ex) {
             return false;
@@ -149,6 +160,10 @@ public abstract class AbstractDAO<T> {
             }
             update += " WHERE "+this.getIdField()+" = ?";
             
+            if(BtcWisdomServer.BTCWisdomSrvApp.DEBUG){
+                System.err.println("GOING TO UPDATE: \n"+update);
+            }
+            
             PreparedStatement ps = c.prepareStatement(update);
             int index = 1;
             for(String field : keys){
@@ -176,6 +191,10 @@ public abstract class AbstractDAO<T> {
             delete = "DELETE FROM "+tblName+" WHERE ";
             
             delete += this.getIdField()+" = ?";
+            
+            if(BtcWisdomServer.BTCWisdomSrvApp.DEBUG){
+                System.err.println("GOING TO DELETE: \n"+delete);
+            }
             
             PreparedStatement ps = c.prepareStatement(delete);
             this.setParameter(ps, 1, this.getIdValue(obj));

@@ -6,16 +6,11 @@
 package BtcWisdomServer;
 
 import BtcWisdomServer.model.DAO.MonedaDAO;
+import BtcWisdomServer.model.DAO.UsuarioDAO;
 import BtcWisdomServer.model.DAO.base.AbstractDAO;
 import BtcWisdomServer.model.classes.*;
 import BtcWisdomServer.utils.JSON;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -31,14 +26,29 @@ public class BtcwServerInitializer implements HttpApiInitializer{
         srv.setDefaultHeader("Content-type", "application/json; charset=utf-8");
         
         srv.setHandler("usuario", "GET", (he, params) -> {
-            Usuario u = new Usuario("john", "johnm@yopmail.com", "123456");
-            return JSON.serialize(u);
+            AbstractDAO<Usuario> dao = new UsuarioDAO();
+            if(params.length == 0){
+                List<Usuario> usuarios = dao.readAll();
+                return JSON.serialize(usuarios);
+            }else if(params.length == 1){
+                Usuario usuario = dao.read(params[0]);
+                return JSON.serialize(usuario);
+            }
+            return JSON.serialize("Invalid url");
         });
         
-        srv.setHandler("usuario/echo", "POST", (he, params) -> {
+        srv.setHandler("usuario", "POST", (he, params) -> {
+            AbstractDAO<Usuario> dao = new UsuarioDAO();
             Usuario u = JSON.deserialize(he.getRequestBody(), Usuario.class);
-            System.out.println(u.getNombre() + " - " + u.getCorreo());
-            return JSON.serialize(u);
+            dao.create(u);
+            return JSON.serialize(u.getId());
+        });
+        
+        srv.setHandler("usuario", "PUT", (he, params) -> {
+            AbstractDAO<Usuario> dao = new UsuarioDAO();
+            Usuario u = JSON.deserialize(he.getRequestBody(), Usuario.class);
+            boolean actualizado = dao.update(u);
+            return JSON.serialize(actualizado);
         });
         
         
