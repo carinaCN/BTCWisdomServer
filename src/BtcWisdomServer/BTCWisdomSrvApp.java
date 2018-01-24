@@ -49,6 +49,13 @@ public class BTCWisdomSrvApp {
             /*Moneda m = new Moneda("EUR", "Euro", "€", 1);
             MonedaDAO dao = new MonedaDAO();
             dao.create(m);*/
+            /*Moneda m = new Moneda();
+            MonedaDAO dao = new MonedaDAO();
+            dao.read("EUR", m);
+            System.out.println(m.getCodigo());
+            System.out.println(m.getNombre());
+            System.out.println(m.getSimbolo());
+            System.out.println(m.getValor());*/
         } catch (BtcwException ex) {
             Logger.getLogger(BTCWisdomSrvApp.class.getName()).log(Level.SEVERE, null, ex);
         }

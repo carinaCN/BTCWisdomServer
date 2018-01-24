@@ -9,6 +9,7 @@ import BtcWisdomServer.exceptions.BtcwDaoException;
 import BtcWisdomServer.model.connection.ConnectionPool;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,10 +69,41 @@ public abstract class AbstractDAO<T> {
         }
     }
     
+    public T read(Object id, T newObj){
+        String select = null;
+        Connection c = ConnectionPool.getConnection();
+        try{
+            Set<String> fields = this.properties.keySet();
+            select = "SELECT "+String.join(", ", fields);
+            select += " FROM "+this.getTableName();
+            select += " WHERE "+this.getIdField()+" = ?";
+            
+            PreparedStatement ps = c.prepareStatement(select);
+            this.setParameter(ps, 1, id);
+            
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                this.setIdValue(newObj, id);
+                for(String field : fields){
+                    Object value = rs.getObject(field);
+                    Property<T, Object> prop = this.properties.get(field);
+                    prop.setProperty(newObj, value);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new BtcwDaoException(select, ex);
+        }finally{
+            ConnectionPool.releaseConnection(c);
+        }
+        return newObj;
+    }
+    
     protected abstract String getTableName();
     
     protected abstract String getIdField();
     
     protected abstract Object getIdValue(T obj);
+    
+    protected abstract void setIdValue(T obj, Object value);
     
 }

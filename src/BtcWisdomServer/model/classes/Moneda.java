@@ -25,6 +25,10 @@ public class Moneda {
         this.valor = valor;
     }
 
+    public Moneda(){
+        
+    }
+
     public String getCodigo() {
         return codigo;
     }

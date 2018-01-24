@@ -20,6 +20,10 @@ public class Configuracion {
     private double precioMinVenta;
     private double precioMaxCompra;
     
+    public Configuracion(){
+        
+    }
+    
     public Configuracion(Usuario u, Moneda m){
         this(u, m, 0d, 0d, 0d, 0d, 0d);
     }
