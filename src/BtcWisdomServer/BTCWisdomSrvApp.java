@@ -6,6 +6,8 @@
 package BtcWisdomServer;
 
 import BtcWisdomServer.exceptions.BtcwException;
+import BtcWisdomServer.model.DAO.MonedaDAO;
+import BtcWisdomServer.model.classes.Moneda;
 import BtcWisdomServer.utils.Config;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +45,10 @@ public class BTCWisdomSrvApp {
             HttpApiServer srv = new HttpApiServer(ip, port, entryPoint);
             srv = new BtcwServerInitializer().initilize(srv);
             srv.start();
+            
+            /*Moneda m = new Moneda("EUR", "Euro", "€", 1);
+            MonedaDAO dao = new MonedaDAO();
+            dao.create(m);*/
         } catch (BtcwException ex) {
             Logger.getLogger(BTCWisdomSrvApp.class.getName()).log(Level.SEVERE, null, ex);
         }

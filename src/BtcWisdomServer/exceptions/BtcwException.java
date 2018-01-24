@@ -9,7 +9,7 @@ package BtcWisdomServer.exceptions;
  *
  * @author Navia
  */
-public abstract class BtcwException extends Exception{
+public abstract class BtcwException extends RuntimeException{
 
     public BtcwException() {
         super();
