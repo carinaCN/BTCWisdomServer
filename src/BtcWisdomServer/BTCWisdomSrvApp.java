@@ -59,6 +59,7 @@ public class BTCWisdomSrvApp {
             
             /*m.setValor(2);
             dao.update(m);*/
+            //dao.delete(m);
         } catch (BtcwException ex) {
             Logger.getLogger(BTCWisdomSrvApp.class.getName()).log(Level.SEVERE, null, ex);
         }

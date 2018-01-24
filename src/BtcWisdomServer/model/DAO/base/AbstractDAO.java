@@ -39,7 +39,7 @@ public abstract class AbstractDAO<T> {
         }
     }
     
-    public void create(T obj){
+    public boolean create(T obj){
         Connection c = ConnectionPool.getConnection();
         String insert = null;
         try {
@@ -61,7 +61,7 @@ public abstract class AbstractDAO<T> {
                 Property<T, Object> p = this.properties.get(field);
                 this.setParameter(ps, index++, p.getProperty(obj));
             }
-            ps.execute();
+            return ps.execute();
         } catch (SQLException ex) {
             throw new BtcwDaoException(insert, ex);
         }finally{
@@ -69,7 +69,7 @@ public abstract class AbstractDAO<T> {
         }
     }
     
-    public T read(Object id, T newObj){
+    public boolean read(Object id, T newObj){
         String select = null;
         Connection c = ConnectionPool.getConnection();
         try{
@@ -89,16 +89,17 @@ public abstract class AbstractDAO<T> {
                     Property<T, Object> prop = this.properties.get(field);
                     prop.setProperty(newObj, value);
                 }
+                return true;
             }
+            return false;
         } catch (SQLException ex) {
             throw new BtcwDaoException(select, ex);
         }finally{
             ConnectionPool.releaseConnection(c);
         }
-        return newObj;
     }
     
-    public void update(T obj){
+    public boolean update(T obj){
         Connection c = ConnectionPool.getConnection();
         String update = null;
         try {
@@ -122,9 +123,31 @@ public abstract class AbstractDAO<T> {
             }
             this.setParameter(ps, index++, this.getIdValue(obj));
             
-            ps.execute();
+            return ps.execute();
         } catch (SQLException ex) {
             throw new BtcwDaoException(update, ex);
+        }finally{
+            ConnectionPool.releaseConnection(c);
+        }
+    }
+    
+    public boolean delete(T obj){
+        Connection c = ConnectionPool.getConnection();
+        String delete = null;
+        try {
+            String tblName = this.getTableName();
+            Set<String> keys = this.properties.keySet();
+            
+            delete = "DELETE FROM "+tblName+" WHERE ";
+            
+            delete += this.getIdField()+" = ?";
+            
+            PreparedStatement ps = c.prepareStatement(delete);
+            this.setParameter(ps, 1, this.getIdValue(obj));
+            
+            return ps.execute();
+        } catch (SQLException ex) {
+            throw new BtcwDaoException(delete, ex);
         }finally{
             ConnectionPool.releaseConnection(c);
         }
