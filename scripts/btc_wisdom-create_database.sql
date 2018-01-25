@@ -51,3 +51,6 @@ create table configuracion(
 		constraint foreign key (fk_usuario) references usuario(id),
 		constraint foreign key (moneda) references moneda(codigo)
 );
+
+insert into usuario(nombre, correo, contrasena, saldo)
+values ("Carina", "carina.calcina@hotmail.com", "123456", 123.56);
