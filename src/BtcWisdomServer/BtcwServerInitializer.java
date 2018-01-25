@@ -31,7 +31,7 @@ public class BtcwServerInitializer implements HttpApiInitializer{
                 List<Usuario> usuarios = dao.readAll();
                 return JSON.serialize(usuarios);
             }else if(params.length == 1){
-                Usuario usuario = dao.read(params[0]);
+                Usuario usuario = dao.read(Integer.parseInt(params[0]));
                 return JSON.serialize(usuario);
             }
             return JSON.serialize("Invalid url");
