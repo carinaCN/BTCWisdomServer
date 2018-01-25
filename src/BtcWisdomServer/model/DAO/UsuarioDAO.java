@@ -84,7 +84,7 @@ public class UsuarioDAO extends AbstractDAO<Usuario>{
 
     @Override
     protected void setIdValue(Usuario obj, Object value) {
-        obj.setId((Long)value);
+        obj.setId((Integer)value);
     }
 
     @Override

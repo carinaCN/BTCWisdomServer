@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class Usuario {
     
-    private long id;
+    private int id;
     private String nombre;
     private String correo;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -41,11 +41,11 @@ public class Usuario {
         this.seguidos = new LinkedList<>();
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
